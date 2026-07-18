@@ -1,0 +1,153 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://art/tilemap/grass_center.png" id="1_2k016"]
+[ext_resource type="Texture2D" path="res://art/tilemap/ground_center.png" id="2_koide"]
+[ext_resource type="Texture2D" path="res://art/tilemap/ground_down.png" id="3_jkpi6"]
+[ext_resource type="Texture2D" path="res://art/tilemap/ground_corner_outside.png" id="4_h5mvn"]
+[ext_resource type="Texture2D" path="res://art/tilemap/ground_corner_inside.png" id="5_nq5wk"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y58w7"]
+texture = ExtResource("1_2k016")
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 0
+0:0/0/terrains_peering_bit/right_side = 0
+0:0/0/terrains_peering_bit/bottom_side = 0
+0:0/0/terrains_peering_bit/left_side = 0
+0:0/0/terrains_peering_bit/top_side = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uyek0"]
+texture = ExtResource("2_koide")
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 1
+0:0/0/terrains_peering_bit/right_side = 1
+0:0/0/terrains_peering_bit/bottom_side = 1
+0:0/0/terrains_peering_bit/left_side = 1
+0:0/0/terrains_peering_bit/top_side = 1
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_1644p"]
+texture = ExtResource("3_jkpi6")
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 1
+0:0/0/terrains_peering_bit/right_side = 1
+0:0/0/terrains_peering_bit/bottom_side = 0
+0:0/0/terrains_peering_bit/left_side = 1
+0:0/0/terrains_peering_bit/top_side = 1
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/1/transpose = true
+0:0/1/terrain_set = 0
+0:0/1/terrain = 1
+0:0/1/terrains_peering_bit/right_side = 1
+0:0/1/terrains_peering_bit/bottom_side = 1
+0:0/1/terrains_peering_bit/left_side = 0
+0:0/1/terrains_peering_bit/top_side = 1
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/flip_v = true
+0:0/2/terrain_set = 0
+0:0/2/terrain = 1
+0:0/2/terrains_peering_bit/right_side = 1
+0:0/2/terrains_peering_bit/bottom_side = 1
+0:0/2/terrains_peering_bit/left_side = 1
+0:0/2/terrains_peering_bit/top_side = 0
+0:0/3 = 3
+0:0/3/flip_v = true
+0:0/3/transpose = true
+0:0/3/terrain_set = 0
+0:0/3/terrain = 1
+0:0/3/terrains_peering_bit/right_side = 0
+0:0/3/terrains_peering_bit/bottom_side = 1
+0:0/3/terrains_peering_bit/left_side = 1
+0:0/3/terrains_peering_bit/top_side = 1
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gw631"]
+texture = ExtResource("4_h5mvn")
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 1
+0:0/0/terrains_peering_bit/right_side = 0
+0:0/0/terrains_peering_bit/bottom_side = 0
+0:0/0/terrains_peering_bit/left_side = 1
+0:0/0/terrains_peering_bit/top_side = 1
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/1/transpose = true
+0:0/1/terrain_set = 0
+0:0/1/terrain = 1
+0:0/1/terrains_peering_bit/right_side = 1
+0:0/1/terrains_peering_bit/bottom_side = 0
+0:0/1/terrains_peering_bit/left_side = 0
+0:0/1/terrains_peering_bit/top_side = 1
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/flip_v = true
+0:0/2/terrain_set = 0
+0:0/2/terrain = 1
+0:0/2/terrains_peering_bit/right_side = 1
+0:0/2/terrains_peering_bit/bottom_side = 1
+0:0/2/terrains_peering_bit/left_side = 0
+0:0/2/terrains_peering_bit/top_side = 0
+0:0/3 = 3
+0:0/3/flip_v = true
+0:0/3/transpose = true
+0:0/3/terrain_set = 0
+0:0/3/terrain = 1
+0:0/3/terrains_peering_bit/right_side = 0
+0:0/3/terrains_peering_bit/bottom_side = 1
+0:0/3/terrains_peering_bit/left_side = 1
+0:0/3/terrains_peering_bit/top_side = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_31nwb"]
+texture = ExtResource("5_nq5wk")
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/0/terrain_set = 0
+0:0/0/terrain = 0
+0:0/0/terrains_peering_bit/right_side = 1
+0:0/0/terrains_peering_bit/bottom_side = 0
+0:0/0/terrains_peering_bit/left_side = 0
+0:0/0/terrains_peering_bit/top_side = 1
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/1/transpose = true
+0:0/1/terrain_set = 0
+0:0/1/terrain = 0
+0:0/1/terrains_peering_bit/right_side = 1
+0:0/1/terrains_peering_bit/bottom_side = 1
+0:0/1/terrains_peering_bit/left_side = 0
+0:0/1/terrains_peering_bit/top_side = 0
+0:0/2 = 2
+0:0/2/flip_h = true
+0:0/2/flip_v = true
+0:0/2/terrain_set = 0
+0:0/2/terrain = 0
+0:0/2/terrains_peering_bit/right_side = 0
+0:0/2/terrains_peering_bit/bottom_side = 1
+0:0/2/terrains_peering_bit/left_side = 1
+0:0/2/terrains_peering_bit/top_side = 0
+0:0/3 = 3
+0:0/3/flip_v = true
+0:0/3/transpose = true
+0:0/3/terrain_set = 0
+0:0/3/terrain = 0
+0:0/3/terrains_peering_bit/right_side = 0
+0:0/3/terrains_peering_bit/bottom_side = 0
+0:0/3/terrains_peering_bit/left_side = 1
+0:0/3/terrains_peering_bit/top_side = 1
+
+[resource]
+terrain_set_0/mode = 2
+terrain_set_0/terrain_0/name = "Trawa"
+terrain_set_0/terrain_0/color = Color(0.3, 0.55, 0.25, 1)
+terrain_set_0/terrain_1/name = "Ziemia"
+terrain_set_0/terrain_1/color = Color(0.55, 0.4, 0.28, 1)
+sources/0 = SubResource("TileSetAtlasSource_y58w7")
+sources/1 = SubResource("TileSetAtlasSource_uyek0")
+sources/2 = SubResource("TileSetAtlasSource_1644p")
+sources/3 = SubResource("TileSetAtlasSource_gw631")
+sources/4 = SubResource("TileSetAtlasSource_31nwb")
