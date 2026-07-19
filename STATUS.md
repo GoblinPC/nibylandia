@@ -2,7 +2,7 @@
 
 Ten plik jest commitowany do repo (widoczny na GitHubie), żeby stan prac przetrwał przesiadki między komputerami. Aktualizowany na bieżąco przy większych krokach.
 
-Ostatnia aktualizacja: 2026-07-19
+Ostatnia aktualizacja: 2026-07-19 (wieczór, Mac — runda kafelków wody ZAMKNIĘTA, wypchnięta na GitHuba)
 
 ## Zrobione
 
@@ -18,9 +18,20 @@ Ostatnia aktualizacja: 2026-07-19
 
 ## W trakcie / do zrobienia najbliżej
 
-1. **Dopisać teren "Woda" do `build_ground_tileset.gd`** na podstawie nowych kafelków w `ground_sheet.png` (pozycje: pełna woda, krawędź, 2 narożniki) — wzorem istniejącej "Ziemi".
-2. Zdecydować: `Ground` w `world.tscn` ma teraz odpięty skrypt generatora (do ręcznego malowania) — trzeba ustalić z użytkownikiem, czy wracamy do generowania proceduralnego, zostajemy przy ręcznej mapie, czy łączymy oba (np. generator jako baza + ręczne poprawki).
-3. `tools/tile_preview.tscn` — scratch-scena do podglądu kafelków z generatorem + graczem, do ogarnięcia/wyczyszczenia po skończeniu prac nad tilesetem.
+1. ~~Dopisać teren "Woda"~~ **ZROBIONE 2026-07-19 (Mac), po przerysowaniu arkusza przez użytkownika.** TRZY terrainy: Ziemia (0), Woda (1), **Trawa (2 — pełnoprawny teren do malowania!)**. Model malowania: głównie Trawą (tło mapy), Ziemia = ścieżki, Woda = jeziora; wszystkie przejścia ziemia↔trawa i woda↔trawa dorabiają się same. Mapowanie kafelków wg jawnej listy użytkownika (patrz komentarze w `tools/build_ground_tileset.gd`); klify NIGDY się nie obracają (ścianka zawsze patrzy w dół): (1,2) klif poziomy, (0,2) narożnik z klifem (+odbicie poziome), (2,2) płaska krawędź (obroty na boki), (2,1) zewnętrzny róg (obroty ×4), (3,1) wypukły z trawą (+odbicie), (3,0) pełna woda. Zweryfikowane sondą (`tools/render_probe.gd` zrzuca PNG testowego jeziora+ścieżki; `tools/render_alts.gd` podgląd altów; oba BEZ --headless).
+   Blok 12 (3,2) = wewnętrzny narożnik klifu (dorysowany przez użytkownika): ścianka z góry skręca w trawiasty brzeg; oryginał = lewy górny róg jeziora, flip_h = prawy górny; kafelek 7 (2,1) został tylko na dolne rogi (obroty 0/270). Kafelki 8 (3,1) i 9 (0,2) = styk z lądem PO SKOSIE (trawa tylko w jednym rogu bitmapy peeringu, boki wodne!): 8+flip = górne rogi wyspy, 9+flip = dolne rogi wyspy (z klifem). Komplet narożników potwierdzony sondą (jezioro + wyspa w środku).
+   Blok 13 (0,3) = poprawiona wersja bloku 9 (piksele piany dopasowane do bloku 12) — ZASTĘPUJE blok 9 w rejestracji (9 zostaje w arkuszu nieużywany). Arkusz powiększony do 128×128 (8×8 pól, pozycje kafelków bez zmian, wolne pola na przyszłe grafiki — np. klify lądowe pod mechanikę wysokości).
+   Weryfikacja po zmianie komputera: zrestartować edytor, przemalować kawałek wody z wyspą i ocenić złącza 12↔13; jakby coś, rejestracje kafelków są w tools/build_ground_tileset.gd z komentarzami przy każdym bloku.
+   WAŻNE przy przebudowie: po każdej zmianie `ground_sheet.png` NAJPIERW `godot --headless --import`, potem builder — inaczej builder widzi starą teksturę z cache'u importu (przerobione: builder+sonda działały na starym arkuszu i wszystko wyglądało "odwrotnie"). Po przebudowie tilesetu użytkownik musi ZRESTARTOWAĆ edytor Godota (nie przeładowuje .tres w locie) i przemalować obszary malowane starą wersją.
+   OGRANICZENIA level designu: woda/ścieżka szerokości 1 kratki nie ma kafelków (min. 2 szerokości); ziemia nie może dotykać wody (brak przejść — zawsze pas trawy); puste (niezamalowane) komórki NIE liczą się jako trawa — mapę najpierw zalać Trawą, gumka robi dziury w przejściach.
+2. Woda NIE MA jeszcze kolizji (można po niej chodzić) — do decyzji: blokuje ruch / spowalnia / pływanie. Kod po stronie Claude'a.
+3. Zauważony zabłąkany niebieski piksel na kafelku ziemi (0,1), prawy dolny róg — do poprawki w LibreSprite.
+4. Zdecydować: `Ground` w `world.tscn` ma odpięty skrypt generatora (ręczne malowanie) — wracamy do proceduralnego, zostajemy przy ręcznym, czy generator jako baza + poprawki?
+5. `tools/tile_preview.tscn` — scratch-scena do podglądu kafelków, do wyczyszczenia po skończeniu prac nad tilesetem.
+
+## Podział ról (ustalony 2026-07-19)
+
+Użytkownik sam robi grafikę i level design (malowanie map, rysowanie kafelków) — Claude tłumaczy narzędzia/workflow i pisze kod. Znaczenie nowych kafelków na spritesheecie ustalamy razem (nie zgadywać z PNG).
 
 ## Zaplanowane (dalej w kolejce)
 
