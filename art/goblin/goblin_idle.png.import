@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bx8k0k7u1dqc3"
-path="res://.godot/imported/ground_corner_outside.png-c8f60a882485e8a525c899d14b98b279.ctex"
+uid="uid://dld31txp7bu0v"
+path="res://.godot/imported/goblin_idle.png-240340ed20f31039ed672a7a6f144ec5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/tilemap/ground_corner_outside.png"
-dest_files=["res://.godot/imported/ground_corner_outside.png-c8f60a882485e8a525c899d14b98b279.ctex"]
+source_file="res://art/goblin/goblin_idle.png"
+dest_files=["res://.godot/imported/goblin_idle.png-240340ed20f31039ed672a7a6f144ec5.ctex"]
 
 [params]
 

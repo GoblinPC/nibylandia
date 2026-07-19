@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="TileSet" path="res://ground_tileset.tres" id="1_tileset"]
+[ext_resource type="Script" path="res://map_generator.gd" id="2_mapgen"]
+[ext_resource type="PackedScene" path="res://player.tscn" id="3_player"]
+
+[node name="TilePreview" type="Node2D"]
+
+[node name="Ground" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_tileset")
+script = ExtResource("2_mapgen")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]

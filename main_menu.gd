@@ -37,6 +37,8 @@ func _ready() -> void:
 	var play := _add_button(buttons, "Graj", _on_play_pressed)
 	if OS.has_feature("editor"):
 		_add_button(buttons, "Graj (lokalnie)", _on_play_local_pressed)
+	if not OS.has_feature("web"):
+		_add_button(buttons, "Wyjdz", _on_quit_pressed)
 
 	var controls := Label.new()
 	controls.text = CONTROLS_TEXT
@@ -72,3 +74,6 @@ func _on_play_local_pressed() -> void:
 
 func _on_join_failed(reason: String) -> void:
 	status_label.text = "Blad: " + reason
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

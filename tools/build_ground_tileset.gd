@@ -1,22 +1,30 @@
 extends SceneTree
 
-# Jednorazowy (uruchamiany recznie) builder TileSetu podloza z osobnych
-# plikow 16x16 w art/tilemap/. Uruchom ponownie po kazdej zmianie tych
-# plikow:
+# Jednorazowy (uruchamiany recznie) builder TileSetu podloza z jednego
+# spritesheeta art/tilemap/ground_sheet.png (siatka 3x2, kafelki 16x16).
+# Uruchom ponownie po kazdej zmianie tego pliku:
 #   godot --headless --script res://tools/build_ground_tileset.gd
 #
-# Minimalny "blob" zestaw dla terrainu Match Sides: pelny kafelek x2
-# (trawa, ziemia), jedna krawedz i dwa rogi (wypukly/wklesly) — kazdy
-# rotowany o 90/180/270 stopni przez flip_h/flip_v/transpose zamiast
-# rysowania osobnej grafiki na kazda orientacje.
+# Model "jeden terrain" (tak jak w wiekszosci tutoriali): tylko "Ziemia"
+# jest prawdziwym terrainem. Trawa to zwykly, nie-terrainowy kafelek
+# stawiany bezposrednio jako tlo (patrz map_generator.gd).
+#
+# Tryb Match Corners and Sides (nie tylko Sides!): rog wypukly (duzo Ziemi,
+# maly naroznik trawy) i rog wklesly (duzo trawy, maly naroznik Ziemi) maja
+# IDENTYCZNY wzorzec 4 bokow — tylko przekatne (rogi-sasiedzi) je odrozniaja.
+# Bez sprawdzania przekatnych Godot nie potrafi wybrac miedzy nimi.
 
-const TRAWA := 0
-const ZIEMIA := 1
+const ZIEMIA := 0
+const BG := -1  # brak terrainu (trawa jako zwykle tlo) — wartosc domyslna, nie trzeba jej ustawiac
 
 const TOP := TileSet.CELL_NEIGHBOR_TOP_SIDE
 const RIGHT := TileSet.CELL_NEIGHBOR_RIGHT_SIDE
 const BOTTOM := TileSet.CELL_NEIGHBOR_BOTTOM_SIDE
 const LEFT := TileSet.CELL_NEIGHBOR_LEFT_SIDE
+const TOP_LEFT := TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER
+const TOP_RIGHT := TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER
+const BOTTOM_LEFT := TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER
+const BOTTOM_RIGHT := TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER
 
 # (flip_h, flip_v, transpose) dla rotacji 0/90/180/270 (w prawo)
 const ROTATIONS := [
@@ -32,39 +40,51 @@ func _initialize() -> void:
 	tile_set.tile_size = Vector2i(16, 16)
 
 	tile_set.add_terrain_set()
-	tile_set.set_terrain_set_mode(0, TileSet.TERRAIN_MODE_MATCH_SIDES)
+	tile_set.set_terrain_set_mode(0, TileSet.TERRAIN_MODE_MATCH_CORNERS_AND_SIDES)
 	tile_set.add_terrain(0)
-	tile_set.add_terrain(0)
-	tile_set.set_terrain_name(0, TRAWA, "Trawa")
-	tile_set.set_terrain_color(0, TRAWA, Color(0.3, 0.55, 0.25))
 	tile_set.set_terrain_name(0, ZIEMIA, "Ziemia")
 	tile_set.set_terrain_color(0, ZIEMIA, Color(0.55, 0.4, 0.28))
 
-	_add_full_tile(tile_set, 0, "res://art/tilemap/grass_center.png", TRAWA)
-	_add_full_tile(tile_set, 1, "res://art/tilemap/ground_center.png", ZIEMIA)
+	var source := TileSetAtlasSource.new()
+	source.texture = load("res://art/tilemap/ground_sheet.png")
+	source.texture_region_size = Vector2i(16, 16)
+	tile_set.add_source(source, 0)
 
-	# krawedz: baza (rotacja 0) ma trawe od dolu, reszta ziemia
-	_add_rotated_tile(tile_set, 2, "res://art/tilemap/ground_down.png", ZIEMIA, [
-		{BOTTOM: TRAWA, TOP: ZIEMIA, RIGHT: ZIEMIA, LEFT: ZIEMIA},
-		{LEFT: TRAWA, TOP: ZIEMIA, RIGHT: ZIEMIA, BOTTOM: ZIEMIA},
-		{TOP: TRAWA, LEFT: ZIEMIA, RIGHT: ZIEMIA, BOTTOM: ZIEMIA},
-		{RIGHT: TRAWA, TOP: ZIEMIA, LEFT: ZIEMIA, BOTTOM: ZIEMIA},
+	# grass_center (0,0): zwykly kafelek tla, bez terrainu w ogole
+	source.create_tile(Vector2i(0, 0))
+
+	# ground_center (1,0): pelna Ziemia, wszystkie 8 bitow
+	source.create_tile(Vector2i(1, 0))
+	_set_bits(source, Vector2i(1, 0), 0, {
+		TOP: ZIEMIA, RIGHT: ZIEMIA, BOTTOM: ZIEMIA, LEFT: ZIEMIA,
+		TOP_LEFT: ZIEMIA, TOP_RIGHT: ZIEMIA, BOTTOM_LEFT: ZIEMIA, BOTTOM_RIGHT: ZIEMIA,
+	})
+
+	# ground_down (2,0): krawedz, baza ma "brak terrainu" (trawe) od dolu
+	# (BOTTOM_LEFT/BOTTOM_RIGHT rogi tez nieustawione — sasiaduja z trawa)
+	_add_rotated_tile(source, Vector2i(2, 0), [
+		{TOP: ZIEMIA, RIGHT: ZIEMIA, LEFT: ZIEMIA, TOP_LEFT: ZIEMIA, TOP_RIGHT: ZIEMIA},
+		{TOP: ZIEMIA, RIGHT: ZIEMIA, BOTTOM: ZIEMIA, TOP_RIGHT: ZIEMIA, BOTTOM_RIGHT: ZIEMIA},
+		{RIGHT: ZIEMIA, LEFT: ZIEMIA, BOTTOM: ZIEMIA, BOTTOM_RIGHT: ZIEMIA, BOTTOM_LEFT: ZIEMIA},
+		{TOP: ZIEMIA, LEFT: ZIEMIA, BOTTOM: ZIEMIA, BOTTOM_LEFT: ZIEMIA, TOP_LEFT: ZIEMIA},
 	])
 
-	# rog wypukly: baza ma trawiasty czubek prawo+dol, reszta ziemia (dirt-majority)
-	_add_rotated_tile(tile_set, 3, "res://art/tilemap/ground_corner_outside.png", ZIEMIA, [
-		{RIGHT: TRAWA, BOTTOM: TRAWA, TOP: ZIEMIA, LEFT: ZIEMIA},
-		{BOTTOM: TRAWA, LEFT: TRAWA, TOP: ZIEMIA, RIGHT: ZIEMIA},
-		{LEFT: TRAWA, TOP: TRAWA, RIGHT: ZIEMIA, BOTTOM: ZIEMIA},
-		{TOP: TRAWA, RIGHT: TRAWA, LEFT: ZIEMIA, BOTTOM: ZIEMIA},
+	# ground_corner_outside (0,1): rog wypukly — duzo Ziemi, maly naroznik
+	# trawy w JEDNYM rogu (3 przekatne z 4 to nadal Ziemia)
+	_add_rotated_tile(source, Vector2i(0, 1), [
+		{TOP: ZIEMIA, LEFT: ZIEMIA, TOP_LEFT: ZIEMIA, TOP_RIGHT: ZIEMIA, BOTTOM_LEFT: ZIEMIA},
+		{TOP: ZIEMIA, RIGHT: ZIEMIA, TOP_LEFT: ZIEMIA, TOP_RIGHT: ZIEMIA, BOTTOM_RIGHT: ZIEMIA},
+		{RIGHT: ZIEMIA, BOTTOM: ZIEMIA, TOP_RIGHT: ZIEMIA, BOTTOM_RIGHT: ZIEMIA, BOTTOM_LEFT: ZIEMIA},
+		{LEFT: ZIEMIA, BOTTOM: ZIEMIA, TOP_LEFT: ZIEMIA, BOTTOM_LEFT: ZIEMIA, BOTTOM_RIGHT: ZIEMIA},
 	])
 
-	# rog wklesly: baza ma ziemisty klin gora+prawo, reszta trawa (grass-majority)
-	_add_rotated_tile(tile_set, 4, "res://art/tilemap/ground_corner_inside.png", TRAWA, [
-		{TOP: ZIEMIA, RIGHT: ZIEMIA, BOTTOM: TRAWA, LEFT: TRAWA},
-		{RIGHT: ZIEMIA, BOTTOM: ZIEMIA, LEFT: TRAWA, TOP: TRAWA},
-		{BOTTOM: ZIEMIA, LEFT: ZIEMIA, TOP: TRAWA, RIGHT: TRAWA},
-		{LEFT: ZIEMIA, TOP: ZIEMIA, RIGHT: TRAWA, BOTTOM: TRAWA},
+	# ground_corner_inside (1,1): rog wklesly — duzo trawy, maly naroznik
+	# Ziemi w JEDNYM rogu (tylko 1 przekatna z 4 to Ziemia)
+	_add_rotated_tile(source, Vector2i(1, 1), [
+		{TOP: ZIEMIA, RIGHT: ZIEMIA, TOP_RIGHT: ZIEMIA},
+		{RIGHT: ZIEMIA, BOTTOM: ZIEMIA, BOTTOM_RIGHT: ZIEMIA},
+		{BOTTOM: ZIEMIA, LEFT: ZIEMIA, BOTTOM_LEFT: ZIEMIA},
+		{LEFT: ZIEMIA, TOP: ZIEMIA, TOP_LEFT: ZIEMIA},
 	])
 
 	var err := ResourceSaver.save(tile_set, "res://ground_tileset.tres")
@@ -75,35 +95,21 @@ func _initialize() -> void:
 	quit()
 
 
-func _add_full_tile(tile_set: TileSet, source_id: int, path: String, terrain: int) -> void:
-	var source := TileSetAtlasSource.new()
-	source.texture = load(path)
-	source.texture_region_size = Vector2i(16, 16)
-	source.create_tile(Vector2i.ZERO)
-	tile_set.add_source(source, source_id)
-	var td := source.get_tile_data(Vector2i.ZERO, 0)
+func _set_bits(source: TileSetAtlasSource, coords: Vector2i, alt_id: int, peering: Dictionary) -> void:
+	var td := source.get_tile_data(coords, alt_id)
 	td.terrain_set = 0
-	td.terrain = terrain
-	for side in [TOP, RIGHT, BOTTOM, LEFT]:
-		td.set_terrain_peering_bit(side, terrain)
+	td.terrain = ZIEMIA
+	for side in peering:
+		td.set_terrain_peering_bit(side, peering[side])
 
 
-func _add_rotated_tile(tile_set: TileSet, source_id: int, path: String, base_terrain: int, peering_per_rotation: Array) -> void:
-	var source := TileSetAtlasSource.new()
-	source.texture = load(path)
-	source.texture_region_size = Vector2i(16, 16)
-	source.create_tile(Vector2i.ZERO)
-	tile_set.add_source(source, source_id)
-
+func _add_rotated_tile(source: TileSetAtlasSource, coords: Vector2i, peering_per_rotation: Array) -> void:
+	source.create_tile(coords)
 	for i in range(4):
-		var alt_id := 0 if i == 0 else source.create_alternative_tile(Vector2i.ZERO)
-		var td := source.get_tile_data(Vector2i.ZERO, alt_id)
+		var alt_id := 0 if i == 0 else source.create_alternative_tile(coords)
+		var td := source.get_tile_data(coords, alt_id)
 		var rot: Array = ROTATIONS[i]
 		td.flip_h = rot[0]
 		td.flip_v = rot[1]
 		td.transpose = rot[2]
-		td.terrain_set = 0
-		td.terrain = base_terrain
-		var peering: Dictionary = peering_per_rotation[i]
-		for side in peering:
-			td.set_terrain_peering_bit(side, peering[side])
+		_set_bits(source, coords, alt_id, peering_per_rotation[i])

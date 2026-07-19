@@ -27,7 +27,6 @@ func _ready() -> void:
 	$MultiplayerSynchronizer.replication_config = config
 
 	$Label.text = str(get_multiplayer_authority())
-	modulate = Color.from_hsv(randf(), 0.55, 1.0)
 	$Camera2D.enabled = is_multiplayer_authority()
 
 
@@ -39,4 +38,5 @@ func _physics_process(_delta: float) -> void:
 			facing_right = direction.x > 0.0
 		move_and_slide()
 
-	$Visual.scale.x = 1.0 if facing_right else -1.0
+	$AnimatedSprite2D.flip_h = not facing_right
+	$AnimatedSprite2D.play("run" if velocity.length() > 0.0 else "idle")
